@@ -14,7 +14,7 @@ export default function MemberTasks() {
   useEffect(() => {
     if (!pendingPostSubmit) return undefined;
     let cancelled = false;
-    const delayMs = 2000 + Math.floor(Math.random() * 1001);
+    const delayMs = 10000 + Math.floor(Math.random() * 5001);
 
     (async () => {
       await new Promise((r) => setTimeout(r, delayMs));

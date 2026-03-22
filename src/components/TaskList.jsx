@@ -43,6 +43,84 @@ function PriorityPill({ priority }) {
   );
 }
 
+/** Tailwind classes for status pill (same shape as priority) */
+function statusPillClass(status) {
+  const s = String(status || "")
+    .trim()
+    .toLowerCase();
+  if (!s) {
+    return "bg-slate-100 text-slate-700 ring-slate-200/80";
+  }
+  if (
+    s.includes("reject") ||
+    s.includes("fail") ||
+    s.includes("error") ||
+    s === "declined"
+  ) {
+    return "bg-rose-100 text-rose-900 ring-rose-200/70";
+  }
+  if (
+    s.includes("incomplete") ||
+    s.includes("uncompleted") ||
+    /\bnot\s+completed\b/.test(s)
+  ) {
+    return "bg-slate-100 text-slate-700 ring-slate-200/80";
+  }
+  if (
+    s === "completed" ||
+    s === "complete" ||
+    s === "done" ||
+    s === "closed" ||
+    s === "resolved" ||
+    s === "approved" ||
+    /\bcompleted\b/.test(s)
+  ) {
+    return "bg-emerald-100 text-emerald-900 ring-emerald-200/70";
+  }
+  if (s.includes("unassign")) {
+    return "bg-slate-100 text-slate-700 ring-slate-200/80";
+  }
+  if (s.includes("assign")) {
+    return "bg-amber-100 text-amber-950 ring-amber-200/80";
+  }
+  if (
+    s.includes("pending") ||
+    s.includes("waiting") ||
+    s.includes("queued") ||
+    s === "open" ||
+    s === "new" ||
+    s === "draft"
+  ) {
+    return "bg-sky-100 text-sky-900 ring-sky-200/70";
+  }
+  if (
+    s.includes("progress") ||
+    s.includes("active") ||
+    s.includes("running") ||
+    s.includes("review")
+  ) {
+    return "bg-blue-100 text-blue-900 ring-blue-200/70";
+  }
+  if (s.includes("cancel")) {
+    return "bg-gray-200 text-gray-800 ring-gray-300/80";
+  }
+  return "bg-slate-100 text-slate-700 ring-slate-200/80";
+}
+
+function StatusPill({ status }) {
+  if (status == null || String(status).trim() === "") {
+    return <span className="text-gray-400">—</span>;
+  }
+  const label = String(status).trim();
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold tracking-wide ring-1 ring-inset ${statusPillClass(label)}`}
+    >
+      {label}
+    </span>
+  );
+}
+
 /**
  * @param {{ tasks: unknown[]; loading?: boolean; error?: string; showStageColumn?: boolean; showViewColumn?: boolean; viewBasePath?: string }} props
  */
@@ -156,9 +234,7 @@ export default function TaskList({
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-5 py-3.5">
-                  <span className="rounded-md bg-gray-100/90 px-2 py-1 text-xs font-medium text-gray-800">
-                    {cellDash(task.status)}
-                  </span>
+                  <StatusPill status={task.status} />
                 </td>
                 {showStageColumn ? (
                   <td className="max-w-[12rem] px-5 py-3.5 text-gray-800" title={task.stageName || undefined}>

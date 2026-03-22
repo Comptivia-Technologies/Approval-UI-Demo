@@ -6,6 +6,47 @@ import { authService } from "../services/authService.js";
 import { fetchTenantIdByEmail } from "../services/tenantService.js";
 import { persistSessionRole, readSessionRole } from "../services/productHubOrganization.js";
 
+function IconEye({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
+function IconEyeSlash({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+      />
+    </svg>
+  );
+}
+
 /**
  * @param {{ expectedRole: "admin" | "member"; title: string; afterLoginPath: string; alternateLoginPath: string; alternateLabel: string }} props
  */
@@ -28,6 +69,7 @@ export default function ProductHubLoginForm({
   const [fetchingTenant, setFetchingTenant] = useState(false);
   const [tenantAutoDetected, setTenantAutoDetected] = useState(false);
   const [availableTenants, setAvailableTenants] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const user = authService.getCurrentUser();
@@ -85,6 +127,7 @@ export default function ProductHubLoginForm({
   const handleBackToEmail = () => {
     setStep("email");
     setPassword("");
+    setShowPassword(false);
     setError("");
     setTenantId("");
     setTenantAutoDetected(false);
@@ -268,17 +311,32 @@ export default function ProductHubLoginForm({
                 <label htmlFor="ph-password" className="mb-1 block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <input
-                  id="ph-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input-field"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <input
+                    id="ph-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="input-field w-full pr-10"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center rounded-r-lg px-3 text-gray-500 transition-colors hover:text-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? (
+                      <IconEyeSlash className="h-5 w-5 shrink-0" />
+                    ) : (
+                      <IconEye className="h-5 w-5 shrink-0" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="btn-primary w-full" disabled={loading}>
