@@ -1,14 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import TaskForm from "../components/TaskForm.jsx";
 import TaskList from "../components/TaskList.jsx";
 import { useAppContext } from "../context/AppContext.jsx";
 
 export default function AdminTasks() {
-  const { tasks, tasksLoading, tasksError, addTask } = useAppContext();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { tasks, tasksLoading, tasksError, addTask, refreshTasks } = useAppContext();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createError, setCreateError] = useState("");
   const [creating, setCreating] = useState(false);
+
+  const pendingPostSubmit = location.state?.refreshTasksAfterDelay === true;
+
+  useEffect(() => {
+    if (!pendingPostSubmit) return undefined;
+    let cancelled = false;
+    const delayMs = 2000 + Math.floor(Math.random() * 1001);
+
+    (async () => {
+      await new Promise((r) => setTimeout(r, delayMs));
+      if (cancelled) return;
+      await refreshTasks();
+      navigate(location.pathname, { replace: true, state: {} });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pendingPostSubmit, location.pathname, navigate, refreshTasks]);
+
+  if (pendingPostSubmit) {
+    return (
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="mb-2 text-4xl font-bold text-gray-900">Tasks</h1>
+            <p className="text-gray-600">Create and manage approval tasks for members.</p>
+          </div>
+        </div>
+        <div className="card text-center text-gray-600">Loading tasks…</div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -45,8 +81,9 @@ export default function AdminTasks() {
                 setCreateError("");
                 setCreating(true);
                 try {
-                  await addTask({ title, description });
+                  await addTask({ title, description, skipRefresh: true });
                   setIsCreateOpen(false);
+                  navigate("/admin/tasks", { replace: true, state: { refreshTasksAfterDelay: true } });
                 } catch (e) {
                   setCreateError(e?.message || "Failed to create task.");
                   throw e;

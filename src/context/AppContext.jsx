@@ -92,7 +92,7 @@ export function AppProvider({ children }) {
   }, [userRole, refreshTasks]);
 
   const addTask = useCallback(
-    async ({ title, description }) => {
+    async ({ title, description, skipRefresh = false }) => {
       const trimmedTitle = title.trim();
       const trimmedDescription = (description || "").trim();
       if (!trimmedTitle) return;
@@ -101,7 +101,9 @@ export function AppProvider({ children }) {
         taskName: trimmedTitle,
         description: trimmedDescription,
       });
-      await refreshTasks();
+      if (!skipRefresh) {
+        await refreshTasks();
+      }
     },
     [refreshTasks],
   );

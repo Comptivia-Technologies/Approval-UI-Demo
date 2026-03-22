@@ -7,7 +7,7 @@ import { useAppContext } from "../context/AppContext.jsx";
 export default function MemberTaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const { tasks, tasksLoading, refreshTasks } = useAppContext();
+  const { tasks, tasksLoading } = useAppContext();
 
   const task = tasks.find((t) => t.id === taskId);
 
@@ -51,7 +51,9 @@ export default function MemberTaskDetail() {
         formKey={task.id}
         taskId={task.id}
         defaultSubmitter={defaultSubmitter}
-        onStageCompleted={refreshTasks}
+        onStageCompleted={() => {
+          navigate("/member/my-tasks", { state: { refreshTasksAfterDelay: true } });
+        }}
       />
     </div>
   );
