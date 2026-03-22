@@ -17,14 +17,17 @@ function priorityPillClass(priority) {
   const p = String(priority || "")
     .trim()
     .toLowerCase();
-  if (p === "high" || p === "critical" || p === "urgent") {
+  if (p === "critical" || p === "urgent") {
     return "bg-rose-100 text-rose-900 ring-rose-200/70";
   }
+  if (p === "high") {
+    return "bg-orange-100 text-orange-900 ring-orange-200/80";
+  }
   if (p === "medium" || p === "normal") {
-    return "bg-amber-100 text-amber-950 ring-amber-200/80";
+    return "bg-yellow-100 text-yellow-900 ring-yellow-200/80";
   }
   if (p === "low") {
-    return "bg-primary-100 text-primary-900 ring-primary-300/60";
+    return "bg-green-100 text-green-900 ring-green-200/80";
   }
   return "bg-slate-100 text-slate-700 ring-slate-200/80";
 }
